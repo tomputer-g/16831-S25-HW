@@ -109,7 +109,7 @@ class MLPPolicySL(MLPPolicy):
             adv_n=None, acs_labels_na=None, qvals=None
     ):
         # TODO: update the policy and return the loss
-        loss = TODO
+        loss = self.update(observations=observations, actions=actions, adv_n=adv_n, acs_labels_na=acs_labels_na, qvals=qvals) #?
 
         return {
             # You can add extra logging information here, but keep this line
