@@ -79,13 +79,19 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             observation = obs
         else:
             observation = obs[None]
-
-        # TODO return the action that the policy prescribes
-        raise NotImplementedError
+        ac_logits = self.forward(observation=observation)
+        return torch.argmax(ac_logits) #dim?
+        # TODO return the action that the policy
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        raise NotImplementedError
+        # TODO update the policy and return the loss
+        self.optimizer.zero_grad()
+        ac_logits = self.forward(observations)
+        loss = self.loss(ac_logits, actions) #does self.loss exist
+        loss.backward()
+        self.optimizer.step()
+        return loss
 
     # This function defines the forward pass of the network.
     # You can return anything you want, but you should be able to differentiate
@@ -93,7 +99,12 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> Any:
-        raise NotImplementedError
+        ac_logits = None
+        if self.discrete:
+            ac_logits = self.logits_na.forward(observation)
+        else:
+            ac_logits = self.mean_net.forward(observation)
+        return ac_logits
 
 
 #####################################################
@@ -109,9 +120,9 @@ class MLPPolicySL(MLPPolicy):
             adv_n=None, acs_labels_na=None, qvals=None
     ):
         # TODO: update the policy and return the loss
-        loss = self.update(observations=observations, actions=actions, adv_n=adv_n, acs_labels_na=acs_labels_na, qvals=qvals) #?
+        self.loss = self.update(observations=observations, actions=actions, adv_n=adv_n, acs_labels_na=acs_labels_na, qvals=qvals) #?
 
         return {
             # You can add extra logging information here, but keep this line
-            'Training Loss': ptu.to_numpy(loss),
+            'Training Loss': ptu.to_numpy(self.loss),
         }
