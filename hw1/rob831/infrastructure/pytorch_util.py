@@ -52,7 +52,7 @@ def build_mlp(
     layers.append(nn.Linear(input_size, size))
     layers.append(activation)
     # Hidden layers
-    for _ in n_layers:
+    for _ in range(n_layers):
         layers.append(nn.Linear(size, size))
         layers.append(activation)
     # Output layer

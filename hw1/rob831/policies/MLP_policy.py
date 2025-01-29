@@ -27,7 +27,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
                  **kwargs
                  ):
         super().__init__(**kwargs)
-
+        print("AC dim", ac_dim, "OB dim", ob_dim)
         # init vars
         self.ac_dim = ac_dim
         self.ob_dim = ob_dim
@@ -75,20 +75,22 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     ##################################
 
     def get_action(self, obs: np.ndarray) -> np.ndarray:
+        #What the fuck
         if len(obs.shape) > 1:
-            observation = obs
+            observation = obs[-1] #?
         else:
             observation = obs[None]
-        ac_logits = self.forward(observation=observation)
-        return torch.argmax(ac_logits) #dim?
+        ac = self.forward(observation=torch.tensor(observation).float().to(ptu.device))
+        # print("getaction",ac.shape)
+        return ac #dim?
         # TODO return the action that the policy
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
         # TODO update the policy and return the loss
         self.optimizer.zero_grad()
-        ac_logits = self.forward(observations)
-        loss = self.loss(ac_logits, actions) #does self.loss exist
+        ac = self.forward(torch.tensor(observations).to(ptu.device))
+        loss = self.loss_fn(ac, torch.tensor(actions).to(ptu.device)) #does self.loss exist
         loss.backward()
         self.optimizer.step()
         return loss
@@ -99,12 +101,11 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> Any:
-        ac_logits = None
+        # print("Forward: obs type is", type(observation))
         if self.discrete:
-            ac_logits = self.logits_na.forward(observation)
+            return self.logits_na.forward(observation)
         else:
-            ac_logits = self.mean_net.forward(observation)
-        return ac_logits
+            return self.mean_net.forward(observation)
 
 
 #####################################################
@@ -113,14 +114,14 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 class MLPPolicySL(MLPPolicy):
     def __init__(self, ac_dim, ob_dim, n_layers, size, **kwargs):
         super().__init__(ac_dim, ob_dim, n_layers, size, **kwargs)
-        self.loss = nn.MSELoss()
+        self.loss_fn = nn.MSELoss()
 
     def update(
             self, observations, actions,
             adv_n=None, acs_labels_na=None, qvals=None
     ):
         # TODO: update the policy and return the loss
-        self.loss = self.update(observations=observations, actions=actions, adv_n=adv_n, acs_labels_na=acs_labels_na, qvals=qvals) #?
+        self.loss = super().update(observations=observations, actions=actions, adv_n=adv_n, acs_labels_na=acs_labels_na, qvals=qvals) #?
 
         return {
             # You can add extra logging information here, but keep this line

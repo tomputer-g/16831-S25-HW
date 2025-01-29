@@ -7,7 +7,7 @@ import time
 def sample_trajectory(env, policy, max_path_length, render=False, render_mode=('rgb_array')):
 
     # initialize env for the beginning of a new rollout
-    ob, _ = env.reset()  # HINT: should be the output of resetting the env [OK]
+    ob = env.reset()  # HINT: should be the output of resetting the env [OK]
 
     # init vars
     obs, acs, rewards, next_obs, terminals, image_obs = [], [], [], [], [], []
@@ -27,8 +27,12 @@ def sample_trajectory(env, policy, max_path_length, render=False, render_mode=('
 
         # use the most recent ob to decide what to do
         obs.append(ob)
-        ac = policy.get_action(obs=obs) # HINT: query the policy's get_action function [OK]
-        ac = ac[0]
+        ac = policy.get_action(obs=np.array(obs))
+        ac = ac.to('cpu').detach().numpy().squeeze() # HINT: query the policy's get_action function [OK]
+        # ac = ac[0]
+        # print(ac.shape)
+        # print(env.action_space.shape) # Box(-1.0, 1.0, (8,), float32) -> (8,)
+
         acs.append(ac)
 
         # take that action and record results
