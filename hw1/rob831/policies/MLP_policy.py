@@ -27,7 +27,6 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
                  **kwargs
                  ):
         super().__init__(**kwargs)
-        print("AC dim", ac_dim, "OB dim", ob_dim)
         # init vars
         self.ac_dim = ac_dim
         self.ob_dim = ob_dim
@@ -81,7 +80,6 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         else:
             observation = obs[None]
         ac = self.forward(observation=torch.tensor(observation).float().to(ptu.device))
-        # print("getaction",ac.shape)
         return ac #dim?
         # TODO return the action that the policy
 
@@ -101,7 +99,6 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> Any:
-        # print("Forward: obs type is", type(observation))
         if self.discrete:
             return self.logits_na.forward(observation)
         else:

@@ -29,10 +29,7 @@ def sample_trajectory(env, policy, max_path_length, render=False, render_mode=('
         obs.append(ob)
         ac = policy.get_action(obs=np.array(obs))
         ac = ac.to('cpu').detach().numpy().squeeze() # HINT: query the policy's get_action function [OK]
-        # ac = ac[0]
-        # print(ac.shape)
-        # print(env.action_space.shape) # Box(-1.0, 1.0, (8,), float32) -> (8,)
-
+        
         acs.append(ac)
 
         # take that action and record results
