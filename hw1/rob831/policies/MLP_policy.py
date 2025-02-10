@@ -88,7 +88,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         # TODO update the policy and return the loss
         self.optimizer.zero_grad()
         ac = self.forward(torch.tensor(observations).to(ptu.device))
-        loss = self.loss_fn(ac, torch.tensor(actions).to(ptu.device)) #does self.loss exist
+        loss = self.loss_fn(ac, torch.tensor(actions).to(ptu.device))
         loss.backward()
         self.optimizer.step()
         return loss

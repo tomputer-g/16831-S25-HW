@@ -120,11 +120,12 @@ class RL_Trainer(object):
             )  # HW1: implement this function below
             paths, envsteps_this_batch, train_video_paths = training_returns
             self.total_envsteps += envsteps_this_batch
-
+            # print("paths head", paths[0]['action'][:5])
             # relabel the collected obs with actions from a provided expert policy
             if relabel_with_expert and itr>=start_relabel_with_expert:
                 # print("Relabeling")
                 paths = self.do_relabel_with_expert(expert_policy, paths)  # HW1: implement this function below
+            # print("new paths head", paths[0]['action'][:5])
             # print("post-relabel length of paths", len(paths))
             # add collected data to replay buffer
             self.agent.add_to_replay_buffer(paths)
