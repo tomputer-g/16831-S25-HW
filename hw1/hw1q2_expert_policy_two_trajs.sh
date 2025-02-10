@@ -2,6 +2,8 @@
 
 run_agent() {
     local agent=$1
+
+    echo "Running agent: $agent with 2 expert trajs"
     # String manipulation
     local agent_lower="${agent,,}"          # Convert to lowercase (ant)
     local exp_name="bc_${agent_lower}"    # Add prefix (bc_ant)
@@ -16,13 +18,12 @@ run_agent() {
         --expert_policy_file "$exp_policy_file" \
         --env_name "$agent-v2" --exp_name "$exp_name" --n_iter 1 \
         --expert_data "$exp_data" \
-        --train_batch_size 2000 \
-        --num_agent_train_steps_per_iter 2000 \
+        --train_batch_size 100 \
+        --num_agent_train_steps_per_iter 1000 \
         --video_log_freq -1 \
-        --ep_len 1000 --eval_batch_size 5000 \
+        --ep_len 1000 --eval_batch_size 2000 \
         --n_layers 2 2>/dev/null)    
 
-    echo "Running agent: $agent"
     #Example of output:
     # Collecting data for eval...
     # /home/tomg/src/16831-S25-HW/hw1/env/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:241: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
@@ -47,17 +48,17 @@ run_agent() {
     # Extract values
     train_avg=$(echo "$output" | grep "Train_AverageReturn" | awk '{print $3}')
     train_std=$(echo "$output" | grep "Train_StdReturn" | awk '{print $3}')
-    eval_avg=$(echo "$output" | grep "Eval_AverageReturn" | awk '{print $3}')
-    eval_std=$(echo "$output" | grep "Eval_StdReturn" | awk '{print $3}')
+    # eval_avg=$(echo "$output" | grep "Eval_AverageReturn" | awk '{print $3}')
+    # eval_std=$(echo "$output" | grep "Eval_StdReturn" | awk '{print $3}')
     # initial_avg=$(echo "$output" | grep "Initial_DataCollection_AverageReturn" | awk '{print $3}')
 
     # Calculate percentage
-    percentage=$(awk "BEGIN {printf \"%.3f\", ($eval_avg / $train_avg) * 100}")
+    # percentage=$(awk "BEGIN {printf \"%.3f\", ($eval_avg / $train_avg) * 100}")
     
     # Print agent name with result
-    echo "${agent} eval/train: ${percentage}%"
+    # echo "${agent} eval/train: ${percentage}%"
     # Print Eval avg/std
-    echo "Eval: ${eval_avg}/${eval_std}"
+    # echo "Eval: ${eval_avg}/${eval_std}"
     # Print Train avg/std
     echo "Train: ${train_avg}/${train_std}"
     echo "---------------------------------"
