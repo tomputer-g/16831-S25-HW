@@ -19,4 +19,4 @@ python rob831/scripts/run_hw1.py \
     --n_layers 1 2>/dev/null 1>"dagger_${agent_lower}_out"
 echo "Done"
 # python hw2q2_dagger_processing.py
-python cooler_hw2q2.py "$agent"
+python hw2q2_processing.py "$agent"

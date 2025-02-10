@@ -44,7 +44,7 @@ def plot_results(env_name, eval_average_returns, eval_std_returns):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python script_name.py <lower_case_env_name> (e.g. python cooler_hw2q2.py hopper)")
+        print("Usage: python script_name.py <env_name> (e.g. python hw2q2_processing.py Hopper)")
         sys.exit(1)
 
     env_name = sys.argv[1]
