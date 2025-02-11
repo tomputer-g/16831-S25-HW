@@ -84,16 +84,25 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         torch.save(self.state_dict(), filepath)
 
     ##################################
-
-    # query the policy with observation(s) to get selected action(s)
+    #NOTE below copied from HW1.
     def get_action(self, obs: np.ndarray) -> np.ndarray:
-        # TODO: get this from hw1
-        raise NotImplementedError
+        if len(obs.shape) > 1:
+            observation = obs[-1] #?
+        else:
+            observation = obs[None]
+        ac = self.forward(observation=torch.tensor(observation).float().to(ptu.device))
+        return ac #dim?
+        # TODO return the action that the policy
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        # this raise should be left alone as it is a base class for PG
-        raise NotImplementedError
+        # TODO update the policy and return the loss
+        self.optimizer.zero_grad()
+        ac = self.forward(torch.tensor(observations).to(ptu.device))
+        loss = self.loss_fn(ac, torch.tensor(actions).to(ptu.device))
+        loss.backward()
+        self.optimizer.step()
+        return loss
 
     # This function defines the forward pass of the network.
     # You can return anything you want, but you should be able to differentiate
@@ -101,8 +110,10 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor):
-        # TODO: get this from hw1
-        raise NotImplementedError
+        if self.discrete:
+            return self.logits_na.forward(observation)
+        else:
+            return self.mean_net.forward(observation)
 
 #####################################################
 #####################################################
@@ -127,8 +138,10 @@ class MLPPolicyPG(MLPPolicy):
         # HINT3: don't forget that `optimizer.step()` MINIMIZES a loss
         # HINT4: use self.optimizer to optimize the loss. Remember to
             # 'zero_grad' first
-
-        raise NotImplementedError
+        #NOTE below from HW1. May need modifications
+        # TODO: update the policy and return the loss
+        self.loss = super().update(observations=observations, actions=actions, adv_n=adv_n, acs_labels_na=acs_labels_na, qvals=qvals) #?
+        policy_loss = self.loss
 
         if self.nn_baseline:
             ## TODO: update the neural network baseline using the q_values as
