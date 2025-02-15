@@ -96,13 +96,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        # TODO update the policy and return the loss
-        self.optimizer.zero_grad()
-        ac = self.forward(torch.tensor(observations).to(ptu.device))
-        loss = self.loss_fn(ac, torch.tensor(actions).to(ptu.device))
-        loss.backward()
-        self.optimizer.step()
-        return loss
+        raise NotImplementedError
 
     # This function defines the forward pass of the network.
     # You can return anything you want, but you should be able to differentiate
@@ -129,6 +123,7 @@ class MLPPolicyPG(MLPPolicy):
         actions = ptu.from_numpy(actions)
         advantages = ptu.from_numpy(advantages)
 
+        
         # TODO: update the policy using policy gradient
         # HINT1: Recall that the expression that we want to MAXIMIZE
             # is the expectation over collected trajectories of:
@@ -138,10 +133,21 @@ class MLPPolicyPG(MLPPolicy):
         # HINT3: don't forget that `optimizer.step()` MINIMIZES a loss
         # HINT4: use self.optimizer to optimize the loss. Remember to
             # 'zero_grad' first
-        #NOTE below from HW1. May need modifications
         # TODO: update the policy and return the loss
-        self.loss = super().update(observations=observations, actions=actions, adv_n=adv_n, acs_labels_na=acs_labels_na, qvals=qvals) #?
-        policy_loss = self.loss
+        
+        
+        self.optimizer.zero_grad()
+        
+        ac_dist = self.forward(observation=observations.to(ptu.device))
+        ac = ac_dist.sample()
+        ac_logprob = ac_dist.log_prob(ac)
+        
+        # TODO update the policy and return the loss
+        # ac = self.forward(torch.tensor(observations).to(ptu.device))
+        # loss = self.loss_fn(ac, torch.tensor(actions).to(ptu.device))
+        loss.backward()
+        self.optimizer.step()
+        return loss
 
         if self.nn_baseline:
             ## TODO: update the neural network baseline using the q_values as
