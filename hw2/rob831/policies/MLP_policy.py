@@ -151,17 +151,17 @@ class MLPPolicyPG(MLPPolicy):
             # 'zero_grad' first
         # TODO: update the policy and return the loss
         
+        ac_dist = self.forward(observation=observations)
+        if self.discrete:
+            log_probs = ac_dist.log_prob(actions)
+            loss = -1 * torch.sum(log_probs * advantages)
+        else:
+            ac = ac_dist.rsample() #TODO understand reparametrization trick
+            loss = -1 * torch.sum(ac_dist.log_prob(ac) * advantages)
         
         self.optimizer.zero_grad()
-        
-        ac = self.forward(observation=observations)
-        
-        # TODO update the policy and return the loss
-        # ac = self.forward(torch.tensor(observations).to(ptu.device))
-        # loss = self.loss_fn(ac, torch.tensor(actions).to(ptu.device))
         loss.backward()
         self.optimizer.step()
-        return loss
 
         if self.nn_baseline:
             ## TODO: update the neural network baseline using the q_values as
@@ -175,7 +175,7 @@ class MLPPolicyPG(MLPPolicy):
             raise NotImplementedError
 
         train_log = {
-            'Training Loss': ptu.to_numpy(policy_loss),
+            'Training Loss': ptu.to_numpy(loss),
         }
         return train_log
 
