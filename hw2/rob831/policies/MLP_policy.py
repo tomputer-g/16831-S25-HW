@@ -87,12 +87,20 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     #NOTE below copied from HW1.
     def get_action(self, obs: np.ndarray) -> np.ndarray:
         if len(obs.shape) > 1:
-            observation = obs[-1] #?
+            observation = obs #?
         else:
             observation = obs[None]
-        ac = self.forward(observation=torch.tensor(observation).float().to(ptu.device))
-        return ac #dim?
-        # TODO return the action that the policy
+
+        # ac = self.forward(observation=torch.tensor(observation).float().to(ptu.device))
+
+        # if self.discrete:
+        #     return distributions.Categorical(probs=ac)
+        # return ac #dim?
+        # # TODO return the action that the policy
+
+        ac_dist = self.forward(observation=ptu.from_numpy(observation))
+        ac = ac_dist.sample()
+        return ptu.to_numpy(ac)
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
@@ -103,11 +111,19 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # through it. For example, you can return a torch.FloatTensor. You can also
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
-    def forward(self, observation: torch.FloatTensor):
+    def forward(self, observation: torch.FloatTensor) -> distributions.Distribution:
+        # if self.discrete:
+        #     return self.logits_na.forward(observation)
+        # else:
+        #     return self.mean_net.forward(observation)
+
         if self.discrete:
-            return self.logits_na.forward(observation)
+            # print("categorical ctor")
+            return distributions.Categorical(logits=self.logits_na.forward(observation))
         else:
-            return self.mean_net.forward(observation)
+            mean = self.mean_net.forward(observation)
+            std = self.logstd.exp().expand_as(mean)
+            return distributions.Normal(mean, std)
 
 #####################################################
 #####################################################
@@ -138,9 +154,7 @@ class MLPPolicyPG(MLPPolicy):
         
         self.optimizer.zero_grad()
         
-        ac_dist = self.forward(observation=observations.to(ptu.device))
-        ac = ac_dist.sample()
-        ac_logprob = ac_dist.log_prob(ac)
+        ac = self.forward(observation=observations)
         
         # TODO update the policy and return the loss
         # ac = self.forward(torch.tensor(observations).to(ptu.device))

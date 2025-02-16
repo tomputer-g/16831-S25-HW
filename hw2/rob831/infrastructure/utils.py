@@ -74,9 +74,9 @@ def sample_trajectory(env, policy, max_path_length, render=False, render_mode=('
         #NOTE copied from HW1.
         # use the most recent ob to decide what to do
         obs.append(ob)
-        ac = policy.get_action(obs=np.array(obs))
-        ac = ac.to('cpu').detach().numpy().squeeze() # HINT: query the policy's get_action function [OK]
-        
+        ac = policy.get_action(obs=np.array(obs))[0] #TODO what type does this want, besides int?
+        # ac = ac.to('cpu').detach().numpy().squeeze() # HINT: query the policy's get_action function [OK]
+        # print(ac)
         acs.append(ac)
 
         # take that action and record results

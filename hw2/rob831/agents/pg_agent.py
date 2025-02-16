@@ -46,7 +46,7 @@ class PGAgent(BaseAgent):
         # HINT1: use helper functions to compute qvals and advantages
         # HINT2: look at the MLPPolicyPG class for how to update the policy
             # and obtain a train_log
-        
+        print("reward list", rewards_list)
         q_vals = self.calculate_q_vals(rewards_list=rewards_list)
         advantages = self.estimate_advantage(obs=observations, rewards_list=rewards_list, q_values=q_vals, terminals=terminals)
     
@@ -77,15 +77,15 @@ class PGAgent(BaseAgent):
         # ordering as observations, actions, etc.
         
         #might be 2d array (each sublist same length...?)
-        _traj_len_first = len(rewards_list[0])
-        for lst in rewards_list:
-            assert _traj_len_first == len(lst)
+        # _traj_len_first = len(rewards_list[0])
+        # for lst in rewards_list:
+        #     assert _traj_len_first == len(lst)
         
         q_values = list()
         if not self.reward_to_go:
             for reward_traj in rewards_list:
                 disc_returns = self._discounted_return(reward_traj)
-                q_values.append(disc_returns)
+                q_values.extend(disc_returns)
             
 
         # Case 2: reward-to-go PG
@@ -93,9 +93,9 @@ class PGAgent(BaseAgent):
         else:
             for reward_traj in rewards_list:
                 disc_rtg = self._discounted_cumsum(reward_traj)
-                q_values.append(disc_rtg)
+                q_values.extend(disc_rtg)
 
-        return np.array(q_values)  # return an array
+        return np.array(q_values)
 
     def estimate_advantage(self, obs, rewards_list, q_values, terminals):
 

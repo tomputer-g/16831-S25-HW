@@ -173,11 +173,11 @@ class RL_Trainer(object):
 
         # (2) collect `self.params['batch_size']` transitions
         
-        if itr == 0:
-            #Load expert policy .pkl file (such as Ant.pkl)
-            with open(load_initial_expertdata, 'rb') as f:
-                loaded_paths = pickle.loads(f.read())
-            return loaded_paths, 0, None
+        # if itr == 0:
+        #     #Load expert policy .pkl file (such as Ant.pkl)
+        #     with open(load_initial_expertdata, 'rb') as f:
+        #         loaded_paths = pickle.loads(f.read())
+        #     return loaded_paths, 0, None
 
         # TODO collect `batch_size` samples to be used for training
         # HINT1: use sample_trajectories from utils
@@ -210,7 +210,7 @@ class RL_Trainer(object):
             # TODO use the sampled data to train an agent
             # HINT: use the agent's train function
             # HINT: keep the agent's training log for debugging
-            train_log = self.agent.train(ob_no=ob_batch, ac_na=ac_batch, re_n=re_batch, next_ob_no=next_ob_batch, terminal_n=terminal_batch)
+            train_log = self.agent.train(observations=ob_batch, actions=ac_batch, rewards_list=re_batch, next_observations=next_ob_batch, terminals=terminal_batch)
             all_logs.append(train_log)
         return all_logs
 
