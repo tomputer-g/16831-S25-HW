@@ -87,20 +87,14 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     #NOTE below copied from HW1.
     def get_action(self, obs: np.ndarray) -> np.ndarray:
         if len(obs.shape) > 1:
-            observation = obs #?
+            observation = obs
         else:
             observation = obs[None]
 
-        # ac = self.forward(observation=torch.tensor(observation).float().to(ptu.device))
-
-        # if self.discrete:
-        #     return distributions.Categorical(probs=ac)
-        # return ac #dim?
-        # # TODO return the action that the policy
-
-        ac_dist = self.forward(observation=ptu.from_numpy(observation))
-        ac = ac_dist.sample()
-        return ptu.to_numpy(ac)
+        observation = ptu.from_numpy(observation)
+        action_distribution = self(observation)
+        action = action_distribution.sample()  # don't bother with rsample
+        return ptu.to_numpy(action)
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
@@ -112,18 +106,22 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> distributions.Distribution:
-        # if self.discrete:
-        #     return self.logits_na.forward(observation)
-        # else:
-        #     return self.mean_net.forward(observation)
-
         if self.discrete:
-            # print("categorical ctor")
-            return distributions.Categorical(logits=self.logits_na.forward(observation))
+            logits = self.logits_na(observation)
+            action_distribution = distributions.Categorical(logits=logits)
+            return action_distribution
         else:
-            mean = self.mean_net.forward(observation)
-            std = self.logstd.exp().expand_as(mean)
-            return distributions.Normal(mean, std)
+            batch_mean = self.mean_net(observation)
+            scale_tril = torch.diag(torch.exp(self.logstd))
+            batch_dim = batch_mean.shape[0]
+            batch_scale_tril = scale_tril.repeat(batch_dim, 1, 1)
+            action_distribution = distributions.MultivariateNormal(
+                batch_mean,
+                scale_tril=batch_scale_tril,
+            )
+            return action_distribution
+
+
 
 #####################################################
 #####################################################
@@ -149,15 +147,16 @@ class MLPPolicyPG(MLPPolicy):
         # HINT3: don't forget that `optimizer.step()` MINIMIZES a loss
         # HINT4: use self.optimizer to optimize the loss. Remember to
             # 'zero_grad' first
+        
         # TODO: update the policy and return the loss
         
         ac_dist = self.forward(observation=observations)
         if self.discrete:
             log_probs = ac_dist.log_prob(actions)
-            loss = -1 * torch.sum(log_probs * advantages)
+            loss = -1 * torch.mean(log_probs * advantages)
         else:
             ac = ac_dist.rsample() #TODO understand reparametrization trick
-            loss = -1 * torch.sum(ac_dist.log_prob(ac) * advantages)
+            loss = -1 * torch.mean(ac_dist.log_prob(ac) * advantages)
         
         self.optimizer.zero_grad()
         loss.backward()
