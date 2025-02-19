@@ -114,8 +114,8 @@ class PGAgent(BaseAgent):
                 ## that the predictions have the same mean and standard deviation as
                 ## the current batch of q_values
 
-            raise NotImplementedError
-            values = TODO
+            values_normalized = normalize(values_normalized, np.mean(values_normalized), np.std(values_normalized))
+            values = unnormalize(values_normalized, np.mean(q_values), np.std(q_values))
 
             if self.gae_lambda is not None:
                 ## append a dummy T+1 value for simpler recursive calculation
@@ -145,7 +145,7 @@ class PGAgent(BaseAgent):
             else:
                 ## TODO: compute advantage estimates using q_values, and values as baselines
                 # raise NotImplementedError
-                advantages = TODO
+                advantages = q_values - values
 
         # Else, just set the advantage to [Q]
         else:
@@ -153,8 +153,7 @@ class PGAgent(BaseAgent):
 
         # Normalize the resulting advantages
         if self.standardize_advantages:
-            advantages -= np.mean(advantages)
-            advantages /= np.std(advantages)
+            advantages = normalize(advantages, np.mean(advantages), np.std(advantages))
             ## TODO: standardize the advantages to have a mean of zero
             ## and a standard deviation of one
 
