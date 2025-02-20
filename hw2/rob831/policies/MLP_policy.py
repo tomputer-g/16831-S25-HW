@@ -133,7 +133,7 @@ class MLPPolicyPG(MLPPolicy):
         self.baseline_loss = nn.MSELoss()
 
     def update(self, observations, actions, advantages, q_values=None):
-        observations = ptu.from_numpy(observations)
+        observations_tensor = ptu.from_numpy(observations)
         actions = ptu.from_numpy(actions)
         advantages = ptu.from_numpy(advantages)
 
@@ -149,14 +149,13 @@ class MLPPolicyPG(MLPPolicy):
             # 'zero_grad' first
         
         # TODO: update the policy and return the loss
-        
-        ac_dist = self.forward(observation=observations)
+
+        ac_dist = self.forward(observation=observations_tensor)
         if self.discrete:
             log_probs = ac_dist.log_prob(actions)
-            loss = -1 * torch.mean(log_probs * advantages)
+            loss = -1 * torch.mean(log_probs * (advantages))
         else:
-            ac = ac_dist.rsample() #TODO understand reparametrization trick
-            loss = -1 * torch.mean(ac_dist.log_prob(ac) * advantages)
+            loss = -1 * torch.mean(ac_dist.log_prob(actions) * (advantages))
         
         self.optimizer.zero_grad()
         loss.backward()
@@ -172,28 +171,34 @@ class MLPPolicyPG(MLPPolicy):
             ## HINT2: You will need to convert the targets into a tensor using
                 ## ptu.from_numpy before using it in the loss
 
-            baseline_out = self.baseline(observations).squeeze()
+            _baseline_pred = self.baseline.forward(observations_tensor).squeeze()
+            # print(_baseline_pred.shape)
 
-            baseline_norm = normalize(baseline_out, baseline_out.mean(), baseline_out.std())
+            # baseline_norm = normalize(_baseline_pred, _baseline_pred.mean(), _baseline_pred.std()) #TODO this should not be needed
+            baseline_norm = _baseline_pred
 
             q_values_norm = ptu.from_numpy(normalize(q_values, np.mean(q_values), np.std(q_values)))
-
-            print("baseline out mean/std", baseline_norm.mean(), baseline_norm.std())
-            print("q_values mean/std", q_values_norm.mean(), q_values_norm.std())
-            baseline_loss = self.baseline_loss(baseline_norm, q_values_norm)
+            print("baseline: ", baseline_norm.mean(), baseline_norm.std())
+            # print("q values: ", q_values_norm.mean(), q_values_norm.std()) #0 mean, 1 std
+            # print("sample items, baseline: ", baseline_norm[:5], baseline_norm[-5:])
+            # print("sample items, q_values: ", q_values_norm[:5], q_values_norm[-5:])
+            # print("baseline out mean/std", baseline_norm.mean(), baseline_norm.std())
+            # print("q_values mean/std", q_values_norm.mean(), q_values_norm.std())
+            _baseline_loss = self.baseline_loss(baseline_norm, q_values_norm)
 
             self.baseline_optimizer.zero_grad()
-            baseline_loss.backward()
+            _baseline_loss.backward()
             self.baseline_optimizer.step()
             
 
         train_log = {
             'Training Loss': ptu.to_numpy(loss),
-            'Baseline Loss': ptu.to_numpy(baseline_loss) if self.nn_baseline else 0
+            'Baseline Loss': ptu.to_numpy(_baseline_loss) if self.nn_baseline else 0
         }
         return train_log
 
-    def run_baseline_prediction(self, observations):
+    #ndarray to ndarray
+    def run_baseline_prediction(self, observations: np.ndarray):
         """
             Helper function that converts `observations` to a tensor,
             calls the forward method of the baseline MLP,

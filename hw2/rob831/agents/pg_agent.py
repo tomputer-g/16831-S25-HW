@@ -48,7 +48,7 @@ class PGAgent(BaseAgent):
             # and obtain a train_log
         q_vals = self.calculate_q_vals(rewards_list=rewards_list)
         advantages = self.estimate_advantage(obs=observations, rewards_list=rewards_list, q_values=q_vals, terminals=terminals)
-    
+        
         train_log = self.actor.update(observations=observations, actions=actions, advantages=advantages, q_values=q_vals)
 
         return train_log
@@ -114,7 +114,9 @@ class PGAgent(BaseAgent):
                 ## that the predictions have the same mean and standard deviation as
                 ## the current batch of q_values
 
-            values_normalized = normalize(values_normalized, np.mean(values_normalized), np.std(values_normalized))
+            # TODO Is this redundant?
+            print("Values norm? ", values_normalized.mean(), values_normalized.std())
+            # values_normalized = normalize(values_normalized, np.mean(values_normalized), np.std(values_normalized))
             values = unnormalize(values_normalized, np.mean(q_values), np.std(q_values))
 
             if self.gae_lambda is not None:
@@ -144,7 +146,6 @@ class PGAgent(BaseAgent):
 
             else:
                 ## TODO: compute advantage estimates using q_values, and values as baselines
-                # raise NotImplementedError
                 advantages = q_values - values
 
         # Else, just set the advantage to [Q]
@@ -153,9 +154,9 @@ class PGAgent(BaseAgent):
 
         # Normalize the resulting advantages
         if self.standardize_advantages:
-            advantages = normalize(advantages, np.mean(advantages), np.std(advantages))
             ## TODO: standardize the advantages to have a mean of zero
             ## and a standard deviation of one
+            advantages = normalize(advantages, np.mean(advantages), np.std(advantages))
 
         return advantages
 
