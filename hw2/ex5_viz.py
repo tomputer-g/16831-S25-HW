@@ -28,9 +28,8 @@ def plot_returns(log_dirs):
         if returns is not None:
             # Extract batch size and learning rate from the log directory name
             parts = log_dir.split('_')
-            batch_size = parts[2][1:]  # Remove 'b' prefix
-            learning_rate = parts[3][1:]  # Remove 'r' prefix
-            label = f"b={batch_size}, r={learning_rate}"
+            lambda_v = parts[4][6:]  # Remove 'b' prefix
+            label = f"lambda={lambda_v}"
             plt.plot(returns, label=label)
     
     plt.title('Eval Average Return for Different Configurations')
@@ -42,19 +41,12 @@ def plot_returns(log_dirs):
     plt.show()
 
 if __name__ == "__main__":
-    log_dir_root = "/home/tomg/src/16831-S25-HW/hw2/data_submit/ex2/"
+    log_dir_root = "/home/tomg/src/16831-S25-HW/hw2/data_submit/ex5/"
     log_dirs = [
-        # log_dir_root + "q2_b10000_r0.005_InvertedPendulum-v4_22-02-2025_09-53-52",
-        log_dir_root + "q2_b10000_r0.01_InvertedPendulum-v4_22-02-2025_10-02-57",
-        # log_dir_root + "q2_b10000_r0.02_InvertedPendulum-v4_22-02-2025_10-11-57",
-        # log_dir_root + "q2_b20000_r0.005_InvertedPendulum-v4_22-02-2025_10-21-01",
-        log_dir_root + "q2_b20000_r0.01_InvertedPendulum-v4_22-02-2025_10-38-23",
-        log_dir_root + "q2_b20000_r0.02_InvertedPendulum-v4_22-02-2025_10-55-39",
-        log_dir_root + "q2_b10000_r0.03_InvertedPendulum-v4_22-02-2025_16-00-48",
-        log_dir_root + "q2_b20000_r0.03_InvertedPendulum-v4_22-02-2025_16-30-37",
-        # log_dir_root + "q2_b5000_r0.005_InvertedPendulum-v4_22-02-2025_09-39-08",
-        # log_dir_root + "q2_b5000_r0.01_InvertedPendulum-v4_22-02-2025_09-44-06",
-        # log_dir_root + "q2_b5000_r0.02_InvertedPendulum-v4_22-02-2025_09-49-04"
+        log_dir_root + "q5_b2000_r0.001_lambda0_Hopper-v4_22-02-2025_16-53-02",
+        log_dir_root + "q5_b2000_r0.001_lambda0.95_Hopper-v4_22-02-2025_17-00-46",
+        log_dir_root + "q5_b2000_r0.001_lambda0.99_Hopper-v4_22-02-2025_17-08-40",
+        log_dir_root + "q5_b2000_r0.001_lambda1_Hopper-v4_22-02-2025_17-16-27",
     ]
 
     plot_returns(log_dirs)

@@ -28,8 +28,8 @@ def plot_returns(log_dirs):
         if returns is not None:
             # Extract batch size and learning rate from the log directory name
             parts = log_dir.split('_')
-            batch_size = parts[2][1:]  # Remove 'b' prefix
-            learning_rate = parts[3][1:]  # Remove 'r' prefix
+            batch_size = parts[4][1:]  # Remove 'b' prefix
+            learning_rate = parts[5][2:]  # Remove 'r' prefix
             label = f"b={batch_size}, r={learning_rate}"
             plt.plot(returns, label=label)
     
@@ -42,19 +42,17 @@ def plot_returns(log_dirs):
     plt.show()
 
 if __name__ == "__main__":
-    log_dir_root = "/home/tomg/src/16831-S25-HW/hw2/data_submit/ex2/"
+    log_dir_root = "/home/tomg/src/16831-S25-HW/hw2/data_submit/ex4_search/"
     log_dirs = [
-        # log_dir_root + "q2_b10000_r0.005_InvertedPendulum-v4_22-02-2025_09-53-52",
-        log_dir_root + "q2_b10000_r0.01_InvertedPendulum-v4_22-02-2025_10-02-57",
-        # log_dir_root + "q2_b10000_r0.02_InvertedPendulum-v4_22-02-2025_10-11-57",
-        # log_dir_root + "q2_b20000_r0.005_InvertedPendulum-v4_22-02-2025_10-21-01",
-        log_dir_root + "q2_b20000_r0.01_InvertedPendulum-v4_22-02-2025_10-38-23",
-        log_dir_root + "q2_b20000_r0.02_InvertedPendulum-v4_22-02-2025_10-55-39",
-        log_dir_root + "q2_b10000_r0.03_InvertedPendulum-v4_22-02-2025_16-00-48",
-        log_dir_root + "q2_b20000_r0.03_InvertedPendulum-v4_22-02-2025_16-30-37",
-        # log_dir_root + "q2_b5000_r0.005_InvertedPendulum-v4_22-02-2025_09-39-08",
-        # log_dir_root + "q2_b5000_r0.01_InvertedPendulum-v4_22-02-2025_09-44-06",
-        # log_dir_root + "q2_b5000_r0.02_InvertedPendulum-v4_22-02-2025_09-49-04"
+        log_dir_root + "q4_search_b10000_lr0.005_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_15-38-53",
+        log_dir_root + "q4_search_b10000_lr0.01_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_15-48-28",
+        log_dir_root + "q4_search_b10000_lr0.02_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_15-57-54",
+        log_dir_root + "q4_search_b30000_lr0.005_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_16-07-14",
+        log_dir_root + "q4_search_b30000_lr0.01_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_16-34-21",
+        log_dir_root + "q4_search_b30000_lr0.02_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_17-01-23",
+        log_dir_root + "q4_search_b50000_lr0.005_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_17-28-14",
+        log_dir_root + "q4_search_b50000_lr0.01_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_18-13-52",
+        log_dir_root + "q4_search_b50000_lr0.02_rtg_nnbaseline_HalfCheetah-v4_20-02-2025_18-58-57",
     ]
 
     plot_returns(log_dirs)

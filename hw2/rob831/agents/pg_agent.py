@@ -139,13 +139,19 @@ class PGAgent(BaseAgent):
                         ## 0 otherwise.
                     ## HINT 2: self.gae_lambda is the lambda value in the
                         ## GAE formula
-
                     if terminals[i]:
-                        #last in traj.
-                        advantages[i] = rewards[i] - values[i]
+                        delta_t = rewards[i] - values[i]
+                        advantages[i] = delta_t
                     else:
-                        advantages[i] = rewards[i] + self.gae_lambda * advantages[i+1] # discounting already done in q val estimation
-                        # part of traj.
+                        delta_t = rewards[i] + self.gamma * values[i+1] - values[i]
+                        advantages[i] = delta_t + self.gamma * self.gae_lambda * advantages[i+1]
+
+                    # if terminals[i]:
+                    #     #last in traj.
+                    #     advantages[i] = rewards[i] + values[i]
+                    # else:
+                    #     advantages[i] = rewards[i] + self.gae_lambda * advantages[i+1] # discounting already done in q val estimation
+                    #     # part of traj.
 
                 # remove dummy advantage
                 advantages = advantages[:-1]
