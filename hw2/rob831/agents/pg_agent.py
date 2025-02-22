@@ -114,8 +114,6 @@ class PGAgent(BaseAgent):
                 ## that the predictions have the same mean and standard deviation as
                 ## the current batch of q_values
 
-            # TODO Is this redundant?
-            print("Values norm? ", values_normalized.mean(), values_normalized.std())
             # values_normalized = normalize(values_normalized, np.mean(values_normalized), np.std(values_normalized))
             values = unnormalize(values_normalized, np.mean(q_values), np.std(q_values))
 
@@ -130,6 +128,8 @@ class PGAgent(BaseAgent):
                 ## estimates, with dummy T+1 value for simpler recursive calculation
                 batch_size = obs.shape[0]
                 advantages = np.zeros(batch_size + 1)
+                # assert (len(advantages) == len(terminals))
+                # assert (len(advantages) == batch_size)
 
                 for i in reversed(range(batch_size)):
                     ## TODO: recursively compute advantage estimates starting from
@@ -139,13 +139,19 @@ class PGAgent(BaseAgent):
                         ## 0 otherwise.
                     ## HINT 2: self.gae_lambda is the lambda value in the
                         ## GAE formula
-                    raise NotImplementedError
+
+                    if terminals[i]:
+                        #last in traj.
+                        advantages[i] = rewards[i] - values[i]
+                    else:
+                        advantages[i] = rewards[i] + self.gae_lambda * advantages[i+1] # discounting already done in q val estimation
+                        # part of traj.
 
                 # remove dummy advantage
                 advantages = advantages[:-1]
 
             else:
-                ## TODO: compute advantage estimates using q_values, and values as baselines
+                ## compute advantage estimates using q_values, and values as baselines
                 advantages = q_values - values
 
         # Else, just set the advantage to [Q]

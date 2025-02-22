@@ -178,7 +178,7 @@ class MLPPolicyPG(MLPPolicy):
             baseline_norm = _baseline_pred
 
             q_values_norm = ptu.from_numpy(normalize(q_values, np.mean(q_values), np.std(q_values)))
-            print("baseline: ", baseline_norm.mean(), baseline_norm.std())
+            # print("baseline: ", baseline_norm.mean(), baseline_norm.std())
             # print("q values: ", q_values_norm.mean(), q_values_norm.std()) #0 mean, 1 std
             # print("sample items, baseline: ", baseline_norm[:5], baseline_norm[-5:])
             # print("sample items, q_values: ", q_values_norm[:5], q_values_norm[-5:])
