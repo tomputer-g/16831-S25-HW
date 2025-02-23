@@ -45,7 +45,7 @@ def plot_returns(log_dirs):
 if __name__ == "__main__":
     log_dir_root = "/home/tomg/src/16831-S25-HW/hw2/data_submit/ex3/"
     log_dirs = [
-        log_dir_root + "q3_b10000_r0.005_LunarLanderContinuous-v2-SUBMIT",
+        log_dir_root + "q3_b10000_r0.005_LunarLanderContinuous-v2_20-02-2025_14-42-00",
     ]
 
     plot_returns(log_dirs)
