@@ -21,7 +21,12 @@ def get_eval_average_returns(log_dir):
     return return_values
 
 def plot_returns(log_dirs, legends):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+    # Create two separate figures
+    fig1 = plt.figure(figsize=(8, 6))
+    ax1 = fig1.add_subplot(111)
+    
+    fig2 = plt.figure(figsize=(8, 6))
+    ax2 = fig2.add_subplot(111)
     
     for i, log_dir in enumerate(log_dirs[:3]):
         returns = get_eval_average_returns(log_dir)
@@ -47,6 +52,10 @@ def plot_returns(log_dirs, legends):
 
     plt.tight_layout()
     plt.show()
+
+    print("Saving figures...")
+    fig1.savefig("fig_out/hw2_ex1_small_batch_returns.png",dpi=300, bbox_inches='tight')
+    fig2.savefig("fig_out/hw2_ex1_large_batch_returns.png",dpi=300, bbox_inches='tight')
 
 if __name__ == "__main__":
     # Six log directories (you can replace these with your actual log directories)

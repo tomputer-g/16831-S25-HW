@@ -22,22 +22,21 @@
 
 bStar=30000
 lrStar=0.02
-
 python rob831/scripts/run_hw2.py --env_name HalfCheetah-v4 --ep_len 150 \
     --discount 0.95 -n 100 -l 2 -s 32 -b "${bStar}" -lr "${lrStar}" \
-    --exp_name "q4_b${b}_r${r}" 2>/dev/null
+    --exp_name "q4_b${bStar}_r${lrStar}" 2>/dev/null
 
 python rob831/scripts/run_hw2.py --env_name HalfCheetah-v4 --ep_len 150 \
     --discount 0.95 -n 100 -l 2 -s 32 -b "${bStar}" -lr "${lrStar}" -rtg \
-    --exp_name "q4_b${b}_r${r}_rtg" 2>/dev/null
+    --exp_name "q4_b${bStar}_r${lrStar}_rtg" 2>/dev/null
 
 python rob831/scripts/run_hw2.py --env_name HalfCheetah-v4 --ep_len 150 \
     --discount 0.95 -n 100 -l 2 -s 32 -b "${bStar}" -lr "${lrStar}" --nn_baseline \
-    --exp_name "q4_b${b}_r${r}_nnbaseline" 2>/dev/null
+    --exp_name "q4_b${bStar}_r${lrStar}_nnbaseline" 2>/dev/null
 
 python rob831/scripts/run_hw2.py --env_name HalfCheetah-v4 --ep_len 150 \
     --discount 0.95 -n 100 -l 2 -s 32 -b "${bStar}" -lr "${lrStar}" -rtg --nn_baseline \
-    --exp_name "q4_b${b}_r${r}_rtg_nnbaseline" 2>/dev/null
+    --exp_name "q4_b${bStar}_r${lrStar}_rtg_nnbaseline" 2>/dev/null
 
 
 # echo "Done."

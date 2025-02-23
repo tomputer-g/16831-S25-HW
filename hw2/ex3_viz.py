@@ -26,20 +26,21 @@ def plot_returns(log_dirs):
     for log_dir in log_dirs:
         returns = get_eval_average_returns(log_dir)
         if returns is not None:
-            # Extract batch size and learning rate from the log directory name
-            parts = log_dir.split('_')
-            batch_size = parts[2][1:]  # Remove 'b' prefix
-            learning_rate = parts[3][1:]  # Remove 'r' prefix
-            label = f"b={batch_size}, r={learning_rate}"
-            plt.plot(returns, label=label)
+            plt.plot(returns)
+    plt.axhline(120, linestyle='--', color='r', label='Expected Avg. Return')
     
-    plt.title('Eval Average Return for Different Configurations')
+    plt.title('LunarLanderContinuous-v2 Eval Average Returns')
     plt.xlabel('Steps')
     plt.ylabel('Eval Average Return')
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
+    plt.savefig("fig_out/hw2_ex3_lander.png",dpi=300, bbox_inches='tight')
+
     plt.tight_layout()
     plt.show()
+
+    # print("Saving figure...")
+    # plt.savefig("fig_out/hw2_ex3_lander.png",dpi=300, bbox_inches='tight')
 
 if __name__ == "__main__":
     log_dir_root = "/home/tomg/src/16831-S25-HW/hw2/data_submit/ex3/"

@@ -9,12 +9,10 @@
 #     --ep_len 1000 --discount 0.9 -n 100 -l 2 -s 64 -b "${b}" -lr "${lr}" -rtg --exp_name "ip_b${b}_lr${lr}_rtg"
 
 # # Array of batch sizes
-# batch_sizes=(5000 10000 20000)
-batch_sizes=(10000 20000)
+batch_sizes=(5000 10000 20000)
 
 # # Array of learning rates
-# learning_rates=(0.005 0.01 0.02)
-learning_rates=(0.02 0.03)
+learning_rates=(0.005 0.01 0.02 0.03)
 
 # # Iterate over batch sizes
 for b in "${batch_sizes[@]}"; do

@@ -33,12 +33,15 @@ def plot_returns(log_dirs):
             label = f"b={batch_size}, r={learning_rate}"
             plt.plot(returns, label=label)
     
-    plt.title('Eval Average Return for Different Configurations')
+    plt.title('HalfCheetah-v4 Eval Average Returns with various configurations')
     plt.xlabel('Steps')
     plt.ylabel('Eval Average Return')
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
+
     plt.tight_layout()
+    plt.savefig("fig_out/hw2_ex4_search.png",dpi=300, bbox_inches='tight')
+
     plt.show()
 
 if __name__ == "__main__":

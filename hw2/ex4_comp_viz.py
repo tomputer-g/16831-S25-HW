@@ -36,6 +36,8 @@ def plot_returns(log_dirs, labels):
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
     plt.tight_layout()
+    plt.savefig("fig_out/hw2_ex4_comp.png",dpi=300, bbox_inches='tight')
+
     plt.show()
 
 if __name__ == "__main__":

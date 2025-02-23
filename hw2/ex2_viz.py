@@ -33,7 +33,7 @@ def plot_returns(log_dirs):
             label = f"b={batch_size}, r={learning_rate}"
             plt.plot(returns, label=label)
     
-    plt.title('Eval Average Return for Different Configurations')
+    plt.title('InvertedPendulum-v4 Eval Average Return for Different Configurations')
     plt.xlabel('Steps')
     plt.ylabel('Eval Average Return')
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -50,11 +50,12 @@ if __name__ == "__main__":
         # log_dir_root + "q2_b20000_r0.005_InvertedPendulum-v4_22-02-2025_10-21-01",
         log_dir_root + "q2_b20000_r0.01_InvertedPendulum-v4_22-02-2025_10-38-23",
         log_dir_root + "q2_b20000_r0.02_InvertedPendulum-v4_22-02-2025_10-55-39",
-        log_dir_root + "q2_b10000_r0.03_InvertedPendulum-v4_22-02-2025_16-00-48",
-        log_dir_root + "q2_b20000_r0.03_InvertedPendulum-v4_22-02-2025_16-30-37",
+        # log_dir_root + "q2_b10000_r0.03_InvertedPendulum-v4_22-02-2025_16-00-48",
+        # log_dir_root + "q2_b20000_r0.03_InvertedPendulum-v4_22-02-2025_16-30-37",
         # log_dir_root + "q2_b5000_r0.005_InvertedPendulum-v4_22-02-2025_09-39-08",
         # log_dir_root + "q2_b5000_r0.01_InvertedPendulum-v4_22-02-2025_09-44-06",
-        # log_dir_root + "q2_b5000_r0.02_InvertedPendulum-v4_22-02-2025_09-49-04"
+        # log_dir_root + "q2_b5000_r0.02_InvertedPendulum-v4_22-02-2025_09-49-04",
+        # log_dir_root + "q2_b5000_r0.03_InvertedPendulum-v4_23-02-2025_11-12-03",
     ]
 
     plot_returns(log_dirs)

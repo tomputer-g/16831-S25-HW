@@ -31,13 +31,14 @@ def plot_returns(log_dirs):
             lambda_v = parts[4][6:]  # Remove 'b' prefix
             label = f"lambda={lambda_v}"
             plt.plot(returns, label=label)
-    
-    plt.title('Eval Average Return for Different Configurations')
+    plt.axhline(400, linestyle='--', color='r', label='Expected Avg. Return')
+    plt.title('Hopper-v4 Eval Average Returns with various GAE Lambda values')
     plt.xlabel('Steps')
     plt.ylabel('Eval Average Return')
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
     plt.tight_layout()
+    plt.savefig("fig_out/hw2_ex5.png",dpi=300, bbox_inches='tight')
     plt.show()
 
 if __name__ == "__main__":
