@@ -39,10 +39,18 @@ class ACAgent(BaseAgent):
 
         # for agent_params['num_actor_updates_per_agent_update'] steps,
         #     update the actor
+        loss_critic = 0
+        for _ in range(self.agent_params['num_critic_updates_per_agent_update']):
+            loss_critic += self.critic.update(ob_no=ob_no, ac_na=ac_na, next_ob_no=next_ob_no, reward_n=re_n, terminal_n=terminal_n)
 
+        advantage = self.estimate_advantage(ob_no=ob_no, next_ob_no=next_ob_no, re_n=re_n, terminal_n=terminal_n)
+
+        loss_actor = 0
+        for _ in range(self.agent_params['num_actor_updates_per_agent_update']):
+            loss_actor += self.actor.update(observations=ob_no, actions=ac_na, adv_n=advantage)
         loss = OrderedDict()
-        loss['Loss_Critic'] = TODO
-        loss['Loss_Actor'] = TODO
+        loss['Loss_Critic'] = loss_critic
+        loss['Loss_Actor'] = loss_actor
 
         return loss
 
@@ -53,10 +61,16 @@ class ACAgent(BaseAgent):
         # 3) estimate the Q value as Q(s, a) = r(s, a) + gamma*V(s')
         # HINT: Remember to cut off the V(s') term (ie set it to 0) at terminal states (ie terminal_n=1)
         # 4) calculate advantage (adv_n) as A(s, a) = Q(s, a) - V(s)
-        adv_n = TODO
+
+        Vs_t = self.critic.forward_np(ob_no)
+        Vs_tp1 = self.critic.forward_np(next_ob_no)
+        Q_t = re_n + self.gamma * Vs_tp1 * (1 - terminal_n)
+
+        adv_n = Q_t - Vs_t
 
         if self.standardize_advantages:
-            adv_n = TODO
+            adv_n -= adv_n.mean()
+            adv_n /= (adv_n.std() + 1e-8)
         return adv_n
 
     def add_to_replay_buffer(self, paths):

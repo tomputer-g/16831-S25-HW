@@ -75,9 +75,11 @@ class DQNCritic(BaseCritic):
             # is being updated, but the Q-value for this action is obtained from the
             # target Q-network. Please review Lecture 8 for more details,
             # and page 4 of https://arxiv.org/pdf/1509.06461.pdf is also a good reference.
-            raise NotImplementedError
+            _, action = self.q_net(next_ob_no).max(dim=1)
+            q_tp1 = torch.gather(self.q_net_target(next_ob_no), 1, action.unsqueeze(1)).squeeze(1)
         else:
             q_tp1, _ = qa_tp1_values.max(dim=1)
+            
 
         # TODO compute targets for minimizing Bellman error
         # HINT: as you saw in lecture, this would be:
