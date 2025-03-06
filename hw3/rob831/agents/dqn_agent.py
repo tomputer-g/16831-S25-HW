@@ -48,7 +48,6 @@ class DQNAgent(object):
             # in dqn_utils.py
         # From store_frame: array should be shape (h, w, c) and dtype uint8.
         #Check this when runnable
-        print("Frame size",self.last_obs.shape, " frame dtype", self.last_obs.dtype)
         self.replay_buffer_idx = self.replay_buffer.store_frame(self.last_obs)
 
         eps = self.exploration.value(self.t)
@@ -65,7 +64,6 @@ class DQNAgent(object):
                 # to deal with the partial observability of the environment. Get the most recent 
                 # `frame_history_len` observations using functionality from the replay buffer,
                 # and then use those observations as input to your actor. 
-            # self.replay_buffer.frame_history_len
             obs = self.replay_buffer.encode_recent_observation()
             action = self.actor.get_action(obs=obs)
         
