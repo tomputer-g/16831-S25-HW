@@ -73,6 +73,7 @@ class MPCPolicy(BasePolicy):
                 #     (Hint: what existing function can we use to compute rewards for
                 #      our candidate sequences in order to rank them?)
                 # - Update the elite mean and variance
+                pass
 
             # TODO(Q5): Set `cem_action` to the appropriate action chosen by CEM
             cem_action = None
@@ -108,8 +109,8 @@ class MPCPolicy(BasePolicy):
             predicted_rewards = self.evaluate_candidate_sequences(candidate_action_sequences, obs)
 
             # pick the action sequence and return the 1st element of that sequence
-            best_action_sequence = # TODO (Q2)
-            action_to_take = # TODO (Q2)
+            best_action_sequence = None # TODO (Q2)
+            action_to_take = None # TODO (Q2)
             return action_to_take[None]  # Unsqueeze the first index
 
     def calculate_sum_of_rewards(self, obs, candidate_action_sequences, model):
