@@ -51,7 +51,12 @@ class MPCPolicy(BasePolicy):
         # TODO(Q1) uniformly sample trajectories and return an array of
         # dimensions (num_sequences, horizon, self.ac_dim) in the range
         # [self.low, self.high]
-        return random_action_sequences
+        
+        print(self.low)
+        print(self.high)
+        raise NotImplementedError
+        
+        # return random_action_sequences
 
     def sample_action_sequences(self, num_sequences, horizon, obs=None):
         if self.sample_strategy == 'random' \
