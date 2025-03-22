@@ -80,7 +80,6 @@ class FFModel(nn.Module, BaseModel):
         # normalize input data to mean 0, std 1
         obs_normalized = normalize(obs_unnormalized, obs_mean, obs_std)
         acs_normalized = normalize(acs_unnormalized, acs_mean, acs_std)
-
         # predicted change in obs
         concatenated_input = torch.cat([obs_normalized, acs_normalized], dim=1)
 
@@ -89,7 +88,8 @@ class FFModel(nn.Module, BaseModel):
         # *normalized change* in state, i.e. normalized(s_t+1 - s_t).
         delta_pred_normalized = self.delta_network(concatenated_input)
         next_obs_pred = unnormalize(delta_pred_normalized, delta_mean, delta_std)
-        return next_obs_pred, delta_pred_normalized
+
+        return next_obs_pred, delta_pred_normalized #RETURNS TORCH TENSORS
 
     def get_prediction(self, obs, acs, data_statistics):
         """
@@ -105,9 +105,11 @@ class FFModel(nn.Module, BaseModel):
              - 'delta_std'
         :return: a numpy array of the predicted next-states (s_t+1)
         """
-        next_obs_pred, delta_pred_norm = self.forward(obs, acs, data_statistics['obs_mean'],\
-            data_statistics['obs_std'], data_statistics['acs_mean'], data_statistics['acs_std'],\
-            data_statistics['delta_mean'], data_statistics['delta_std'])
+        obs = ptu.from_numpy(obs)
+        acs = ptu.from_numpy(acs)
+        next_obs_pred, delta_pred_norm = self.forward(obs, acs, ptu.from_numpy(data_statistics['obs_mean']),\
+            ptu.from_numpy(data_statistics['obs_std']), ptu.from_numpy(data_statistics['acs_mean']), ptu.from_numpy(data_statistics['acs_std']),\
+            ptu.from_numpy(data_statistics['delta_mean']), ptu.from_numpy(data_statistics['delta_std']))
         prediction = next_obs_pred
         # (Q1) get the predicted next-states (s_t+1) as a numpy array
         # Hint: `self(...)` returns a tuple, but you only need to use one of the
@@ -136,8 +138,16 @@ class FFModel(nn.Module, BaseModel):
         # Hint: you should use `data_statistics['delta_mean']` and
         # `data_statistics['delta_std']`, which keep track of the mean
         # and standard deviation of the model.
-        target_norm = normalize(target, data_statistics['delta_mean'], data_statistics['delta_std'])
-        pred = self.get_prediction(obs=observations, acs = actions, data_statistics=data_statistics)
+        target_norm = ptu.from_numpy(normalize(target, data_statistics['delta_mean'], data_statistics['delta_std']))
+        
+        obs = ptu.from_numpy(observations)
+        acs = ptu.from_numpy(actions)
+        next_obs_pred, delta_pred_norm = self.forward(obs, acs, ptu.from_numpy(data_statistics['obs_mean']),\
+            ptu.from_numpy(data_statistics['obs_std']), ptu.from_numpy(data_statistics['acs_mean']), ptu.from_numpy(data_statistics['acs_std']),\
+            ptu.from_numpy(data_statistics['delta_mean']), ptu.from_numpy(data_statistics['delta_std']))
+        pred = delta_pred_norm
+        # print(type(pred), type(target_norm))
+        # print(pred.device, target_norm.device)
         loss = self.loss(pred, target_norm) # TODO(Q1) compute the loss
         # Hint: `self(...)` returns a tuple, but you only need to use one of the
         # outputs.
