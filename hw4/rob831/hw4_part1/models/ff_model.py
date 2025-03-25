@@ -87,7 +87,7 @@ class FFModel(nn.Module, BaseModel):
         # Hint: as described in the PDF, the output of the network is the
         # *normalized change* in state, i.e. normalized(s_t+1 - s_t).
         delta_pred_normalized = self.delta_network(concatenated_input)
-        next_obs_pred = unnormalize(delta_pred_normalized, delta_mean, delta_std)
+        next_obs_pred = unnormalize(delta_pred_normalized, delta_mean, delta_std) + obs_unnormalized
 
         return next_obs_pred, delta_pred_normalized #RETURNS TORCH TENSORS
 
